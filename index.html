@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="styles.css">
+        <title>Formulario de Registro</title>
+    </head>
+    <body>
+        <h1>Formulario de Validacion de datos</h1>
+        <form id="registroForm">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" required>
+            <br>
+            <label for="apellido">Apellido:</label>
+            <input type="text" id="apellido" required>
+            <br>
+            <label for="cedula">Cedula:</label>
+            <input type="text" id="cedula" required>
+            <br>
+            <label for="telefono">Telefono:</label>
+            <input type="text" placeholder="+(593) 180 000 000" id="telefono" required>
+            <br>
+            <label for="salario">Salario:</label>
+            <input type="text" id="salario" required>
+            <br>
+            <label for="fecha_nacimiento">Fecha Nacimiento:</label>
+            <input type="date" id="fecha_nacimiento" required>
+            <br>
+            <label for="email">Correo electronico:</label>
+            <input type="email" id="email" required>
+            <br>
+            <label for="sitio_web">Sitio web:</label>
+            <input type="url" placeholder="https://www.ejemplo.com" id="sitio_web" required>
+            <br>
+            <label for="contraseña">Contraseña:</label>
+            <input type="password" id="contraseña" required>
+            <br>
+            <button type="submit">Enviar</button>
+        </form>
+
+        <script>
+            const form = document.getElementById("registroForm");
+
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                // Obtenemos los valores de los campos del formulario
+                const nombre = document.getElementById("nombre").value;
+                const apellido = document.getElementById("apellido").value;
+                const cedula = document.getElementById("cedula").value;
+                const telefono = document.getElementById("telefono").value;
+                const salario = document.getElementById("salario").value;
+                const fecha_nacimiento = document.getElementById("fecha_nacimiento").value;
+                const email = document.getElementById("email").value;
+                const sitio_web = document.getElementById("sitio_web").value;
+                const contraseña = document.getElementById("contraseña").value;
+
+                // Validamos los campos en el cliente
+                if (!validateNombreApellido(nombre)) {
+                    alert("Por favor, ingresa un nombre válido (entre 3 y 30 caracteres, solo letras y espacios).");
+                    return;
+                }
+                if (!validateNombreApellido(apellido)) {
+                    alert("Por favor, ingresa un apellido válido (entre 3 y 30 caracteres, solo letras y espacios).");
+                    return;
+                }
+                if (!validarCedula(cedula)) {
+                    alert("La cédula ingresada no es válida.");
+                    return;
+                }
+                if (!validateTelefono(telefono)) {
+                    alert("Por favor, ingresa un número de teléfono válido en el formato +(593) 180 000 000.");
+                    return;
+                }
+                const salarioNumero = parseFloat(salario);
+                if (isNaN(salarioNumero) || salarioNumero < 450 || salarioNumero > 5000) {
+                    alert("Por favor, ingresa un salario válido entre 450 y 5000.");
+                    return;
+                }
+                if (!validateFecha(fecha_nacimiento)) {
+                    alert("Por favor, ingresa una fecha de nacimiento válida.");
+                    return;
+                }
+                if (!validateContraseña(contraseña)) {
+                    alert("Por favor, ingresa una contraseña válida (entre 8 y 12 caracteres, con mayúsculas, minúsculas, números y caracteres especiales).");
+                    return;
+                }
+                form.submit();
+            });
+
+            function validateNombreApellido(nombreApellido) {
+                const minLength = 3;
+                const maxLength = 30;
+
+                if (nombreApellido.length < minLength || nombreApellido.length > maxLength) {
+                    return false;
+                }
+
+                const validCharactersRegex = /^[A-Za-záéíóúÁÉÍÓÚñÑ\s']+$/;
+
+                if (!validCharactersRegex.test(nombreApellido)) {
+                    return false;
+                }
+
+                // Verificar si hay más de 3 vocales o consonantes seguidas
+                const consecutiveVowelsRegex = /[aeiouáéíóú]{3}/i;
+                const consecutiveConsonantsRegex = /[^aeiouáéíóú]{3}/i;
+
+                if (consecutiveVowelsRegex.test(nombreApellido) || consecutiveConsonantsRegex.test(nombreApellido)) {
+                    return false;
+                }
+
+                return true;
+            }
+
+            function validarCedula(num) {
+                num = num.toString();
+                let i = 0;
+                let acum = 0;
+                const lista = [];
+
+                for (let n of num) {
+                    n = parseInt(n);
+                    lista.push(n);
+                }
+
+                for (let n of lista) {
+                    i++;
+                    if (i % 2 === 1) {
+                        n *= 2;
+                        if (n < 10) {
+                            acum += n;
+                        } else {
+                            n -= 9;
+                            acum += n;
+                        }
+                    } else {
+                        acum += n;
+                    }
+
+                    if (i === 10) {
+                        acum -= n;
+                    }
+                }
+
+                acum = acum % 10;
+                if (acum > 0) {
+                    acum = 10 - acum;
+                } else {
+                    acum = 0;
+                }
+
+                // Compara el dígito verificador calculado con el último dígito de la cédula
+                const ultimoDigito = parseInt(num[num.length - 1]);
+                return acum === ultimoDigito;
+            }
+
+            function validateTelefono(telefono) {
+                const telefonoRegex = /^\+\(593\) \d{3} \d{3} \d{3}$/;
+                return telefonoRegex.test(telefono);
+            }
+
+            function validateEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+
+            function validateFecha(fecha_nacimiento) {
+                const dateRegex = /^(\d{4})\-(\d{1,2})\-(\d{1,2})$/;
+
+                const [, anio, mes, dia] = dateRegex.exec(fecha_nacimiento);
+                const fecha = new Date(`${anio}-${mes}-${dia}`);
+
+                const diaNacimiento = fecha.getDate();
+                const mesNacimiento = fecha.getMonth() + 1;
+                const anioNacimiento = fecha.getFullYear();
+
+                const fechaActual = new Date();
+                const diaActual = fechaActual.getDate();
+                const mesActual = fechaActual.getMonth() + 1;
+                const anioActual = fechaActual.getFullYear();
+
+                console.log("1: " + fechaActual);
+                console.log("2: " + fecha_nacimiento);
+
+                if (anioNacimiento > anioActual) {
+                    return false;
+                } else if (anioNacimiento === anioActual) {
+                    if (mesNacimiento > mesActual || (mesNacimiento === mesActual && diaNacimiento > diaActual)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            function validateSitioWeb(sitio_web) {
+                const urlRegex = /^(https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}(\/\S*)?$/;
+                return urlRegex.test(sitio_web);
+            }
+
+            function validateContraseña(contraseña) {
+                const minLength = 8;
+                const maxLength = 12;
+
+                if (contraseña.length < minLength || contraseña.length > maxLength) {
+                    return false;
+                }
+
+                const uppercaseRegex = /[A-Z]/;
+                const lowercaseRegex = /[a-z]/;
+                const numberRegex = /\d/;
+                const specialCharRegex = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/;
+
+                return (
+                    uppercaseRegex.test(contraseña) &&
+                    lowercaseRegex.test(contraseña) &&
+                    numberRegex.test(contraseña) &&
+                    specialCharRegex.test(contraseña)
+                );
+            }
+        </script>
+    </body>
+</html>

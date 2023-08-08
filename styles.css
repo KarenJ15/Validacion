@@ -1,0 +1,22 @@
+form{
+    padding: 40px;
+    max-width: 400px;
+    background-color: #E7E7E7;
+    margin: 0 auto;
+  }
+form input{
+    margin-bottom: 10px;
+    font-family: "Roboto", sans-serif;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;  
+    color: #4d6a86; 
+    font-size: 1em;
+    resize: none;
+}
+label{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+form button{
+    background-color: rgba(253, 253, 90, 0.795);
+}
